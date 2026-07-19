@@ -1,0 +1,21 @@
+{
+  "name": "簿記3級 5要素トレーニング",
+  "short_name": "簿記5要素",
+  "description": "勘定科目を5要素に分類するシンプルな練習アプリ",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f4f7fb",
+  "theme_color": "#0ea5e9",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

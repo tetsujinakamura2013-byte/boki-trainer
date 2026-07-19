@@ -1,0 +1,164 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+
+type ElementType = "資産" | "負債" | "純資産" | "費用" | "収益" | "その他";
+
+type Account = {
+  name: string;
+  type: ElementType;
+};
+
+const accounts: Account[] = [
+  { name: "現金", type: "資産" },
+  { name: "当座預金", type: "資産" },
+  { name: "普通預金", type: "資産" },
+  { name: "定期預金", type: "資産" },
+  { name: "小口現金", type: "資産" },
+  { name: "受取手形", type: "資産" },
+  { name: "売掛金", type: "資産" },
+  { name: "電子記録債権", type: "資産" },
+  { name: "商品", type: "資産" },
+  { name: "繰越商品", type: "資産" },
+  { name: "貯蔵品", type: "資産" },
+  { name: "前払金", type: "資産" },
+  { name: "前払費用", type: "資産" },
+  { name: "未収入金", type: "資産" },
+  { name: "未収収益", type: "資産" },
+  { name: "立替金", type: "資産" },
+  { name: "仮払金", type: "資産" },
+  { name: "仮払法人税等", type: "資産" },
+  { name: "仮払消費税", type: "資産" },
+  { name: "貸付金", type: "資産" },
+  { name: "手形貸付金", type: "資産" },
+  { name: "役員貸付金", type: "資産" },
+  { name: "建物", type: "資産" },
+  { name: "備品", type: "資産" },
+  { name: "車両運搬具", type: "資産" },
+  { name: "土地", type: "資産" },
+  { name: "差入保証金", type: "資産" },
+  { name: "貸倒引当金", type: "資産" },
+  { name: "減価償却累計額", type: "資産" },
+
+  { name: "支払手形", type: "負債" },
+  { name: "買掛金", type: "負債" },
+  { name: "電子記録債務", type: "負債" },
+  { name: "借入金", type: "負債" },
+  { name: "手形借入金", type: "負債" },
+  { name: "未払金", type: "負債" },
+  { name: "未払費用", type: "負債" },
+  { name: "未払法人税等", type: "負債" },
+  { name: "未払消費税", type: "負債" },
+  { name: "未払配当金", type: "負債" },
+  { name: "前受金", type: "負債" },
+  { name: "前受収益", type: "負債" },
+  { name: "預り金", type: "負債" },
+  { name: "社会保険料預り金", type: "負債" },
+  { name: "所得税預り金", type: "負債" },
+  { name: "仮受金", type: "負債" },
+  { name: "仮受消費税", type: "負債" },
+
+  { name: "資本金", type: "純資産" },
+  { name: "利益準備金", type: "純資産" },
+  { name: "繰越利益剰余金", type: "純資産" },
+
+  { name: "仕入", type: "費用" },
+  { name: "給料", type: "費用" },
+  { name: "法定福利費", type: "費用" },
+  { name: "広告宣伝費", type: "費用" },
+  { name: "発送費", type: "費用" },
+  { name: "旅費交通費", type: "費用" },
+  { name: "通信費", type: "費用" },
+  { name: "消耗品費", type: "費用" },
+  { name: "水道光熱費", type: "費用" },
+  { name: "支払家賃", type: "費用" },
+  { name: "支払地代", type: "費用" },
+  { name: "保険料", type: "費用" },
+  { name: "租税公課", type: "費用" },
+  { name: "支払手数料", type: "費用" },
+  { name: "支払利息", type: "費用" },
+  { name: "貸倒引当金繰入", type: "費用" },
+  { name: "貸倒損失", type: "費用" },
+  { name: "減価償却費", type: "費用" },
+  { name: "固定資産売却損", type: "費用" },
+  { name: "雑損", type: "費用" },
+  { name: "法人税、住民税及び事業税", type: "費用" },
+
+  { name: "売上", type: "収益" },
+  { name: "受取手数料", type: "収益" },
+  { name: "受取利息", type: "収益" },
+  { name: "受取家賃", type: "収益" },
+  { name: "償却債権取立益", type: "収益" },
+  { name: "固定資産売却益", type: "収益" },
+  { name: "雑益", type: "収益" },
+
+  { name: "損益", type: "その他" },
+  { name: "現金過不足", type: "その他" }
+];
+
+const choices: ElementType[] = ["資産", "負債", "純資産", "費用", "収益", "その他"];
+
+function getRandomIndex(exclude?: number) {
+  if (accounts.length <= 1) return 0;
+  let next = Math.floor(Math.random() * accounts.length);
+  while (next === exclude) next = Math.floor(Math.random() * accounts.length);
+  return next;
+}
+
+export default function Home() {
+  const [index, setIndex] = useState(0);
+  const [selected, setSelected] = useState<ElementType | null>(null);
+
+  useEffect(() => {
+    setIndex(getRandomIndex());
+  }, []);
+
+  const current = useMemo(() => accounts[index], [index]);
+  const isCorrect = selected === current.type;
+
+  const answer = (choice: ElementType) => {
+    if (selected) return;
+    setSelected(choice);
+  };
+
+  const nextQuestion = () => {
+    setSelected(null);
+    setIndex((currentIndex) => getRandomIndex(currentIndex));
+  };
+
+  return (
+    <main className="page-shell">
+      <section className="app-card" aria-label="簿記3級 5要素トレーニング">
+        <div className="account-panel">{current.name}</div>
+
+        <div className="choice-grid">
+          {choices.map((choice) => (
+            <button
+              key={choice}
+              type="button"
+              className={`choice-button choice-${choice} ${selected === choice ? "selected" : ""}`}
+              onClick={() => answer(choice)}
+              disabled={selected !== null}
+            >
+              {choice}
+            </button>
+          ))}
+        </div>
+
+        <div className={`result-panel ${selected ? (isCorrect ? "correct" : "wrong") : "idle"}`}>
+          <span className="result-label">判定：</span>
+          <span className="result-mark">{selected ? (isCorrect ? "○" : "×") : "—"}</span>
+        </div>
+
+        <button
+          type="button"
+          className="next-button"
+          onClick={nextQuestion}
+          disabled={!selected}
+        >
+          次の問題
+        </button>
+      </section>
+    </main>
+  );
+}
