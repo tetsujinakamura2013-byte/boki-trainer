@@ -2,8 +2,8 @@
   --bg: #f4f7fb;
   --panel: #ffffff;
   --border: #111827;
-  --blue: #0ea5e9;
-  --asset: #123b7a;
+  --blue: #1fa9e5;
+  --asset: #153f80;
   --expense: #8fd14f;
   --other: #fbbf24;
   --correct: #15803d;
@@ -28,7 +28,7 @@ button {
 }
 
 .page-shell {
-  min-height: 100svh;
+  min-height: 100vh;
   display: grid;
   place-items: center;
   padding: 18px;
@@ -38,40 +38,67 @@ button {
   width: min(100%, 760px);
   background: var(--panel);
   border: 1px solid #dbe3ee;
-  border-radius: 20px;
-  padding: 18px;
+  border-radius: 22px;
+  padding: 20px;
   box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
 }
 
 .account-panel {
-  min-height: 112px;
+  min-height: 116px;
   border: 4px solid var(--border);
   background: var(--blue);
   display: grid;
   place-items: center;
   padding: 18px;
   text-align: center;
-  font-size: clamp(28px, 7vw, 48px);
+  font-size: clamp(2rem, 6vw, 3.8rem);
   font-weight: 800;
-  line-height: 1.25;
+  line-height: 1.2;
 }
 
-.choice-grid {
+.choice-sections {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.choice-section {
+  display: grid;
+  gap: 8px;
+}
+
+.section-label {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #475569;
+  letter-spacing: 0.08em;
+}
+
+.choice-row {
+  display: grid;
   gap: 12px;
-  margin-top: 22px;
+}
+
+.choice-row-bs {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.choice-row-pl {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.choice-row-other {
+  grid-template-columns: 1fr;
 }
 
 .choice-button {
-  min-height: 58px;
+  min-height: 72px;
   border: 3px solid var(--border);
-  border-radius: 10px;
-  color: white;
-  font-weight: 800;
-  font-size: clamp(18px, 4.2vw, 26px);
+  border-radius: 16px;
   cursor: pointer;
-  transition: transform 0.08s ease, opacity 0.15s ease;
+  font-size: clamp(1.35rem, 3.8vw, 2rem);
+  font-weight: 800;
+  transition: transform 0.08s ease, opacity 0.15s ease, box-shadow 0.15s ease;
 }
 
 .choice-button:active:not(:disabled) {
@@ -80,18 +107,17 @@ button {
 
 .choice-button:disabled {
   cursor: default;
-  opacity: 0.72;
 }
 
 .choice-button.selected {
-  outline: 5px solid rgba(14, 165, 233, 0.28);
-  opacity: 1;
+  box-shadow: 0 0 0 4px rgba(15, 23, 42, 0.18);
 }
 
 .choice-資産,
 .choice-負債,
 .choice-純資産 {
   background: var(--asset);
+  color: white;
 }
 
 .choice-費用,
@@ -106,20 +132,17 @@ button {
 }
 
 .result-panel {
-  margin-top: 22px;
-  min-height: 78px;
-  border: 4px solid #ef4444;
+  min-height: 92px;
+  margin-top: 18px;
+  border: 4px solid #cbd5e1;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  font-size: clamp(24px, 6vw, 42px);
-  font-weight: 900;
-}
-
-.result-panel.idle {
-  border-color: #cbd5e1;
-  color: #64748b;
+  gap: 14px;
+  padding: 14px;
+  text-align: center;
+  font-size: clamp(1.45rem, 4vw, 2.2rem);
+  font-weight: 800;
 }
 
 .result-panel.correct {
@@ -132,25 +155,24 @@ button {
   color: var(--wrong);
 }
 
-.result-label {
-  font-size: 0.62em;
+.result-panel.idle {
+  color: #64748b;
 }
 
-.result-mark {
-  min-width: 1.2em;
-  text-align: center;
+.result-answer {
+  font-size: 0.78em;
 }
 
 .next-button {
   width: 100%;
-  margin-top: 16px;
-  min-height: 58px;
+  min-height: 72px;
+  margin-top: 18px;
   border: 0;
-  border-radius: 12px;
-  background: #111827;
+  border-radius: 16px;
+  background: #2563eb;
   color: white;
+  font-size: clamp(1.3rem, 3.5vw, 1.8rem);
   font-weight: 800;
-  font-size: 20px;
   cursor: pointer;
 }
 
@@ -165,23 +187,41 @@ button {
   }
 
   .app-card {
-    border-radius: 14px;
+    border-radius: 16px;
     padding: 12px;
   }
 
   .account-panel {
-    min-height: 104px;
+    min-height: 96px;
     border-width: 3px;
+    padding: 12px;
   }
 
-  .choice-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-    margin-top: 16px;
+  .choice-row-bs {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 7px;
+  }
+
+  .choice-row-pl {
+    gap: 8px;
   }
 
   .choice-button {
-    min-height: 56px;
+    min-height: 62px;
     border-width: 2px;
+    border-radius: 12px;
+    font-size: 1.25rem;
+  }
+
+  .result-panel {
+    min-height: 78px;
+    gap: 8px;
+    border-width: 3px;
+    flex-wrap: wrap;
+  }
+
+  .next-button {
+    min-height: 62px;
+    border-radius: 12px;
   }
 }

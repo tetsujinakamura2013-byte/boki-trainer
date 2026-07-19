@@ -131,23 +131,64 @@ export default function Home() {
       <section className="app-card" aria-label="簿記3級 5要素トレーニング">
         <div className="account-panel">{current.name}</div>
 
-        <div className="choice-grid">
-          {choices.map((choice) => (
-            <button
-              key={choice}
-              type="button"
-              className={`choice-button choice-${choice} ${selected === choice ? "selected" : ""}`}
-              onClick={() => answer(choice)}
-              disabled={selected !== null}
-            >
-              {choice}
-            </button>
-          ))}
+        <div className="choice-sections">
+          <section className="choice-section" aria-label="貸借対照表の要素">
+            <div className="section-label">B/S</div>
+            <div className="choice-row choice-row-bs">
+              {["資産", "負債", "純資産"].map((choice) => (
+                <button
+                  key={choice}
+                  type="button"
+                  className={`choice-button choice-${choice} ${selected === choice ? "selected" : ""}`}
+                  onClick={() => answer(choice as ElementType)}
+                  disabled={selected !== null}
+                >
+                  {choice}
+                </button>
+              ))}
+            </div>
+          </section>
+
+          <section className="choice-section" aria-label="損益計算書の要素">
+            <div className="section-label">P/L</div>
+            <div className="choice-row choice-row-pl">
+              {["費用", "収益"].map((choice) => (
+                <button
+                  key={choice}
+                  type="button"
+                  className={`choice-button choice-${choice} ${selected === choice ? "selected" : ""}`}
+                  onClick={() => answer(choice as ElementType)}
+                  disabled={selected !== null}
+                >
+                  {choice}
+                </button>
+              ))}
+            </div>
+          </section>
+
+          <section className="choice-section" aria-label="その他">
+            <div className="section-label">その他</div>
+            <div className="choice-row choice-row-other">
+              <button
+                type="button"
+                className={`choice-button choice-その他 ${selected === "その他" ? "selected" : ""}`}
+                onClick={() => answer("その他")}
+                disabled={selected !== null}
+              >
+                その他
+              </button>
+            </div>
+          </section>
         </div>
 
         <div className={`result-panel ${selected ? (isCorrect ? "correct" : "wrong") : "idle"}`}>
           <span className="result-label">判定：</span>
           <span className="result-mark">{selected ? (isCorrect ? "○" : "×") : "—"}</span>
+          {selected && (
+            <span className="result-answer">
+              {isCorrect ? current.type : `正解：${current.type}`}
+            </span>
+          )}
         </div>
 
         <button
