@@ -93,21 +93,30 @@ const accounts: Account[] = [
   { name: "雑益", type: "収益" },
 
   { name: "損益", type: "その他" },
-  { name: "現金過不足", type: "その他" }
+  { name: "現金過不足", type: "その他" },
 ];
 
-const choices: ElementType[] = ["資産", "負債", "純資産", "費用", "収益", "その他"];
+const MAX_STREAK = 50;
+const FLOWERS_PER_ROW = 10;
 
 function getRandomIndex(exclude?: number) {
   if (accounts.length <= 1) return 0;
+
   let next = Math.floor(Math.random() * accounts.length);
-  while (next === exclude) next = Math.floor(Math.random() * accounts.length);
+
+  while (next === exclude) {
+    next = Math.floor(Math.random() * accounts.length);
+  }
+
   return next;
 }
 
 export default function Home() {
   const [index, setIndex] = useState(0);
   const [selected, setSelected] = useState<ElementType | null>(null);
+
+  // 連続正解数。保存しないため再読み込みすると0に戻る
+  const [streak, setStreak] = useState(0);
 
   useEffect(() => {
     setIndex(getRandomIndex());
@@ -118,7 +127,16 @@ export default function Home() {
 
   const answer = (choice: ElementType) => {
     if (selected) return;
+
     setSelected(choice);
+
+    if (choice === current.type) {
+      // 50問を上限に桜を増やす
+      setStreak((previous) => Math.min(previous + 1, MAX_STREAK));
+    } else {
+      // 1問でも間違えたら桜を全消去
+      setStreak(0);
+    }
   };
 
   const nextQuestion = () => {
@@ -126,20 +144,57 @@ export default function Home() {
     setIndex((currentIndex) => getRandomIndex(currentIndex));
   };
 
+  // 桜を10個ずつの段に分ける
+  const flowerRows = Array.from(
+    { length: Math.ceil(streak / FLOWERS_PER_ROW) },
+    (_, rowIndex) => {
+      const remaining = streak - rowIndex * FLOWERS_PER_ROW;
+      return Math.min(remaining, FLOWERS_PER_ROW);
+    }
+  );
+
   return (
     <main className="page-shell">
-      <section className="app-card" aria-label="簿記3級 5要素トレーニング">
+      <section
+        className="app-card"
+        aria-label="簿記3級 5要素トレーニング"
+      >
+        {/* 連続正解の桜。1段目を下側に表示 */}
+        <div className="flower-area" aria-label={`連続正解数 ${streak}`}>
+          {flowerRows.map((flowerCount, rowIndex) => (
+            <div className="flower-row" key={rowIndex}>
+              {Array.from({ length: flowerCount }, (_, flowerIndex) => (
+                <span
+                  key={flowerIndex}
+                  className={`flower ${
+                    flowerIndex === 5 ? "flower-second-half" : ""
+                  }`}
+                  aria-hidden="true"
+                >
+                  🌸
+                </span>
+              ))}
+            </div>
+          ))}
+        </div>
+
         <div className="account-panel">{current.name}</div>
 
         <div className="choice-sections">
-          <section className="choice-section" aria-label="貸借対照表の要素">
+          <section
+            className="choice-section"
+            aria-label="貸借対照表の要素"
+          >
             <div className="section-label">B/S</div>
+
             <div className="choice-row choice-row-bs">
               {["資産", "負債", "純資産"].map((choice) => (
                 <button
                   key={choice}
                   type="button"
-                  className={`choice-button choice-${choice} ${selected === choice ? "selected" : ""}`}
+                  className={`choice-button choice-${choice} ${
+                    selected === choice ? "selected" : ""
+                  }`}
                   onClick={() => answer(choice as ElementType)}
                   disabled={selected !== null}
                 >
@@ -149,14 +204,20 @@ export default function Home() {
             </div>
           </section>
 
-          <section className="choice-section" aria-label="損益計算書の要素">
+          <section
+            className="choice-section"
+            aria-label="損益計算書の要素"
+          >
             <div className="section-label">P/L</div>
+
             <div className="choice-row choice-row-pl">
               {["費用", "収益"].map((choice) => (
                 <button
                   key={choice}
                   type="button"
-                  className={`choice-button choice-${choice} ${selected === choice ? "selected" : ""}`}
+                  className={`choice-button choice-${choice} ${
+                    selected === choice ? "selected" : ""
+                  }`}
                   onClick={() => answer(choice as ElementType)}
                   disabled={selected !== null}
                 >
@@ -168,10 +229,13 @@ export default function Home() {
 
           <section className="choice-section" aria-label="その他">
             <div className="section-label">その他</div>
+
             <div className="choice-row choice-row-other">
               <button
                 type="button"
-                className={`choice-button choice-その他 ${selected === "その他" ? "selected" : ""}`}
+                className={`choice-button choice-その他 ${
+                  selected === "その他" ? "selected" : ""
+                }`}
                 onClick={() => answer("その他")}
                 disabled={selected !== null}
               >
@@ -181,9 +245,17 @@ export default function Home() {
           </section>
         </div>
 
-        <div className={`result-panel ${selected ? (isCorrect ? "correct" : "wrong") : "idle"}`}>
+        <div
+          className={`result-panel ${
+            selected ? (isCorrect ? "correct" : "wrong") : "idle"
+          }`}
+        >
           <span className="result-label">判定：</span>
-          <span className="result-mark">{selected ? (isCorrect ? "○" : "×") : "—"}</span>
+
+          <span className="result-mark">
+            {selected ? (isCorrect ? "○" : "×") : "—"}
+          </span>
+
           {selected && (
             <span className="result-answer">
               {isCorrect ? current.type : `正解：${current.type}`}

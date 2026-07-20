@@ -225,3 +225,51 @@ button {
     border-radius: 12px;
   }
 }
+/* 連続正解の桜表示エリア */
+.flower-area {
+  min-height: 155px;
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-start;
+  gap: 3px;
+  padding: 8px 6px;
+  overflow: hidden;
+}
+
+/* 桜は左から右へ並ぶ */
+.flower-row {
+  min-height: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  white-space: nowrap;
+}
+
+/* 桜1個の大きさ */
+.flower {
+  display: inline-block;
+  font-size: 21px;
+  line-height: 1;
+}
+
+/* 5個目と6個目の間を少し広げる */
+.flower-second-half {
+  margin-left: 10px;
+}
+
+/* 小さいスマートフォン向け */
+@media (max-width: 420px) {
+  .flower-area {
+    min-height: 140px;
+    padding-left: 2px;
+    padding-right: 2px;
+  }
+
+  .flower {
+    font-size: 19px;
+  }
+
+  .flower-second-half {
+    margin-left: 6px;
+  }
+}
