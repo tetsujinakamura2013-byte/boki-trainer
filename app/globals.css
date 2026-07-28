@@ -1,275 +1,94 @@
-:root {
-  --bg: #f4f7fb;
-  --panel: #ffffff;
-  --border: #111827;
-  --blue: #1fa9e5;
-  --asset: #153f80;
-  --expense: #8fd14f;
-  --other: #fbbf24;
-  --correct: #15803d;
-  --wrong: #b91c1c;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-html,
-body {
-  margin: 0;
-  min-height: 100%;
-  background: var(--bg);
-  color: #111827;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans JP", sans-serif;
-}
-
-button {
-  font: inherit;
-}
-
-.page-shell {
-  min-height: 100vh;
-  display: grid;
-  place-items: center;
-  padding: 18px;
-}
-
-.app-card {
-  width: min(100%, 760px);
-  background: var(--panel);
-  border: 1px solid #dbe3ee;
-  border-radius: 22px;
-  padding: 20px;
-  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
-}
-
-.account-panel {
-  min-height: 116px;
-  border: 4px solid var(--border);
-  background: var(--blue);
-  display: grid;
-  place-items: center;
-  padding: 18px;
-  text-align: center;
-  font-size: clamp(2rem, 6vw, 3.8rem);
-  font-weight: 800;
-  line-height: 1.2;
-}
-
-.choice-sections {
-  display: grid;
-  gap: 14px;
-  margin-top: 18px;
-}
-
-.choice-section {
-  display: grid;
-  gap: 8px;
-}
-
-.section-label {
-  font-size: 1rem;
-  font-weight: 800;
-  color: #475569;
-  letter-spacing: 0.08em;
-}
-
-.choice-row {
-  display: grid;
-  gap: 12px;
-}
-
-.choice-row-bs {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.choice-row-pl {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.choice-row-other {
-  grid-template-columns: 1fr;
-}
-
-.choice-button {
-  min-height: 72px;
-  border: 3px solid var(--border);
-  border-radius: 16px;
+/* 不正解時に押せる判定エリア */
+.result-panel.clickable {
   cursor: pointer;
-  font-size: clamp(1.35rem, 3.8vw, 2rem);
-  font-weight: 800;
-  transition: transform 0.08s ease, opacity 0.15s ease, box-shadow 0.15s ease;
+  transition: background 0.15s ease, transform 0.08s ease;
 }
 
-.choice-button:active:not(:disabled) {
-  transform: scale(0.98);
+.result-panel.clickable:hover {
+  background: #fff1f2;
 }
 
-.choice-button:disabled {
-  cursor: default;
+.result-panel.clickable:active {
+  transform: scale(0.99);
 }
 
-.choice-button.selected {
-  box-shadow: 0 0 0 4px rgba(15, 23, 42, 0.18);
-}
-
-.choice-資産,
-.choice-負債,
-.choice-純資産 {
-  background: var(--asset);
-  color: white;
-}
-
-.choice-費用,
-.choice-収益 {
-  background: var(--expense);
-  color: #111827;
-}
-
-.choice-その他 {
-  background: var(--other);
-  color: #111827;
-}
-
-.result-panel {
-  min-height: 92px;
-  margin-top: 18px;
-  border: 4px solid #cbd5e1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-  padding: 14px;
-  text-align: center;
-  font-size: clamp(1.45rem, 4vw, 2.2rem);
-  font-weight: 800;
-}
-
-.result-panel.correct {
-  border-color: var(--correct);
-  color: var(--correct);
-}
-
-.result-panel.wrong {
-  border-color: var(--wrong);
-  color: var(--wrong);
-}
-
-.result-panel.idle {
+.result-hint {
+  font-size: 0.48em;
+  font-weight: 700;
   color: #64748b;
 }
 
-.result-answer {
-  font-size: 0.78em;
+/* 勘定科目の説明ポップアップ */
+.explanation-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(15, 23, 42, 0.68);
 }
 
-.next-button {
+.explanation-modal {
+  width: min(100%, 520px);
+  max-height: 85vh;
+  overflow-y: auto;
+  background: white;
+  border: 4px solid #111827;
+  border-radius: 20px;
+  padding: 26px;
+  text-align: center;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
+}
+
+.explanation-type {
+  display: inline-block;
+  margin-bottom: 10px;
+  padding: 6px 18px;
+  border-radius: 999px;
+  background: #e2e8f0;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.explanation-title {
+  margin: 0;
+  font-size: clamp(2rem, 7vw, 3rem);
+  line-height: 1.2;
+}
+
+.explanation-text {
+  margin: 22px 0;
+  text-align: left;
+  font-size: clamp(1.15rem, 4vw, 1.45rem);
+  font-weight: 650;
+  line-height: 1.75;
+}
+
+.explanation-close {
   width: 100%;
-  min-height: 72px;
-  margin-top: 18px;
+  min-height: 62px;
   border: 0;
-  border-radius: 16px;
+  border-radius: 14px;
   background: #2563eb;
   color: white;
-  font-size: clamp(1.3rem, 3.5vw, 1.8rem);
+  font-size: 1.3rem;
   font-weight: 800;
   cursor: pointer;
 }
 
-.next-button:disabled {
-  background: #cbd5e1;
-  cursor: default;
-}
-
 @media (max-width: 560px) {
-  .page-shell {
-    padding: 10px;
+  .result-hint {
+    width: 100%;
   }
 
-  .app-card {
+  .explanation-modal {
+    padding: 20px 16px;
+    border-width: 3px;
     border-radius: 16px;
-    padding: 12px;
   }
 
-  .account-panel {
-    min-height: 96px;
-    border-width: 3px;
-    padding: 12px;
-  }
-
-  .choice-row-bs {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 7px;
-  }
-
-  .choice-row-pl {
-    gap: 8px;
-  }
-
-  .choice-button {
-    min-height: 62px;
-    border-width: 2px;
-    border-radius: 12px;
-    font-size: 1.25rem;
-  }
-
-  .result-panel {
-    min-height: 78px;
-    gap: 8px;
-    border-width: 3px;
-    flex-wrap: wrap;
-  }
-
-  .next-button {
-    min-height: 62px;
-    border-radius: 12px;
-  }
-}
-/* 連続正解の桜表示エリア */
-.flower-area {
-  min-height: 155px;
-  display: flex;
-  flex-direction: column-reverse;
-  justify-content: flex-start;
-  gap: 3px;
-  padding: 8px 6px;
-  overflow: hidden;
-}
-
-/* 桜は左から右へ並ぶ */
-.flower-row {
-  min-height: 25px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  white-space: nowrap;
-}
-
-/* 桜1個の大きさ */
-.flower {
-  display: inline-block;
-  font-size: 21px;
-  line-height: 1;
-}
-
-/* 5個目と6個目の間を少し広げる */
-.flower-second-half {
-  margin-left: 10px;
-}
-
-/* 小さいスマートフォン向け */
-@media (max-width: 420px) {
-  .flower-area {
-    min-height: 140px;
-    padding-left: 2px;
-    padding-right: 2px;
-  }
-
-  .flower {
-    font-size: 19px;
-  }
-
-  .flower-second-half {
-    margin-left: 6px;
+  .explanation-text {
+    margin: 18px 0;
   }
 }
