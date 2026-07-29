@@ -273,3 +273,9 @@ button {
     margin-left: 6px;
   }
 }
+.app-version {
+  margin-top: 8px;
+  text-align: right;
+  font-size: 10px;
+  color: #8a8f98;
+}
