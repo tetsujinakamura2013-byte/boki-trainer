@@ -271,6 +271,7 @@ export default function Home() {
         >
           次の問題
         </button>
+        <div className="app-version">Ver.1.1.1</div>
       </section>
     </main>
   );
