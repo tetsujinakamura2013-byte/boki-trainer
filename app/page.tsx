@@ -116,6 +116,8 @@ export default function Home() {
   const [index, setIndex] = useState(0);
   const [selected, setSelected] = useState<ElementType | null>(null);
   const [showExplanation, setShowExplanation] = useState(false);
+  const [showMistakeHistory, setShowMistakeHistory] = useState(false);
+  const [mistakeCounts, setMistakeCounts] = useState<Record<string, number>>({});
 
   // 連続正解数。保存しないため再読み込みすると0に戻る
   const [streak, setStreak] = useState(0);
@@ -138,6 +140,12 @@ export default function Home() {
     } else {
       // 1問でも間違えたら桜を全消去
       setStreak(0);
+
+      // ミスした勘定科目を、この画面を開いている間だけ記録する
+      setMistakeCounts((previous) => ({
+        ...previous,
+        [current.name]: (previous[current.name] ?? 0) + 1,
+      }));
     }
   };
 
@@ -163,6 +171,11 @@ export default function Home() {
     }
   };
 
+  const sortedMistakes = Object.entries(mistakeCounts).sort(
+    ([nameA, countA], [nameB, countB]) =>
+      countB - countA || nameA.localeCompare(nameB, "ja")
+  );
+
   // 桜を10個ずつの段に分ける
   const flowerRows = Array.from(
     { length: Math.ceil(streak / FLOWERS_PER_ROW) },
@@ -178,23 +191,34 @@ export default function Home() {
         className="app-card"
         aria-label="簿記3級 5要素トレーニング"
       >
-        {/* 連続正解の桜。1段目を下側に表示 */}
-        <div className="flower-area" aria-label={`連続正解数 ${streak}`}>
-          {flowerRows.map((flowerCount, rowIndex) => (
-            <div className="flower-row" key={rowIndex}>
-              {Array.from({ length: flowerCount }, (_, flowerIndex) => (
-                <span
-                  key={flowerIndex}
-                  className={`flower ${
-                    flowerIndex === 5 ? "flower-second-half" : ""
-                  }`}
-                  aria-hidden="true"
-                >
-                  🌸
-                </span>
-              ))}
-            </div>
-          ))}
+        <div className="flower-history-area">
+          {/* 連続正解の桜。1段目を下側に表示 */}
+          <div className="flower-area" aria-label={`連続正解数 ${streak}`}>
+            {flowerRows.map((flowerCount, rowIndex) => (
+              <div className="flower-row" key={rowIndex}>
+                {Array.from({ length: flowerCount }, (_, flowerIndex) => (
+                  <span
+                    key={flowerIndex}
+                    className={`flower ${
+                      flowerIndex === 5 ? "flower-second-half" : ""
+                    }`}
+                    aria-hidden="true"
+                  >
+                    🌸
+                  </span>
+                ))}
+              </div>
+            ))}
+          </div>
+
+          <button
+            type="button"
+            className="mistake-history-button"
+            onClick={() => setShowMistakeHistory(true)}
+            aria-label="ミス履歴を表示"
+          >
+            ミス<br />履歴
+          </button>
         </div>
 
         <div className="account-panel">{current.name}</div>
@@ -302,8 +326,49 @@ export default function Home() {
         >
           次の問題
         </button>
-        <div className="app-version">Ver.1.2.0</div>
+        <div className="app-version">Ver.1.3.0</div>
       </section>
+
+      {showMistakeHistory && (
+        <div
+          className="modal-overlay"
+          role="presentation"
+          onClick={() => setShowMistakeHistory(false)}
+        >
+          <section
+            className="modal-card"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="mistake-history-title"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <h2 id="mistake-history-title" className="modal-title">
+              ミス履歴
+            </h2>
+
+            {sortedMistakes.length > 0 ? (
+              <div className="mistake-history-list">
+                {sortedMistakes.map(([name, count]) => (
+                  <div className="mistake-history-row" key={name}>
+                    <span>{name}</span>
+                    <span>{count}回</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="mistake-history-empty">まだミスはありません。</p>
+            )}
+
+            <button
+              type="button"
+              className="modal-close-button"
+              onClick={() => setShowMistakeHistory(false)}
+            >
+              閉じる
+            </button>
+          </section>
+        </div>
+      )}
 
       {showExplanation && (
         <div
