@@ -343,3 +343,95 @@ button {
   font-weight: 700;
   cursor: pointer;
 }
+
+
+/* Ver.1.3.0 桜エリアとミス履歴ボタン */
+.flower-history-area {
+  min-height: 155px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 58px;
+  gap: 8px;
+  align-items: end;
+}
+
+.flower-history-area .flower-area {
+  min-width: 0;
+}
+
+.mistake-history-button {
+  width: 58px;
+  height: 58px;
+  align-self: end;
+  margin-bottom: 8px;
+  border: 2px solid #94a3b8;
+  border-radius: 12px;
+  background: #eef3f8;
+  color: #1e293b;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.15;
+  cursor: pointer;
+}
+
+.mistake-history-button:active {
+  transform: scale(0.97);
+}
+
+.mistake-history-list {
+  display: grid;
+  gap: 0;
+  border-top: 1px solid #dbe3ee;
+}
+
+.mistake-history-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
+  padding: 11px 2px;
+  border-bottom: 1px solid #dbe3ee;
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+.mistake-history-row span:first-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.mistake-history-row span:last-child {
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.mistake-history-empty {
+  margin: 0;
+  text-align: center;
+  color: #64748b;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+@media (max-width: 420px) {
+  .flower-history-area {
+    min-height: 140px;
+    grid-template-columns: minmax(0, 1fr) 54px;
+    gap: 6px;
+  }
+
+  .mistake-history-button {
+    width: 54px;
+    height: 54px;
+    margin-bottom: 6px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 350px) {
+  .flower {
+    font-size: 17px;
+  }
+
+  .flower-second-half {
+    margin-left: 4px;
+  }
+}
