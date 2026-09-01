@@ -119,8 +119,10 @@ export default function Home() {
   const [showMistakeHistory, setShowMistakeHistory] = useState(false);
   const [mistakeCounts, setMistakeCounts] = useState<Record<string, number>>({});
 
-  // 連続正解数。保存しないため再読み込みすると0に戻る
+  // 現在の連続正解数と、今回の最高連続正解記録。
+  // 保存しないため再読み込みすると0に戻る
   const [streak, setStreak] = useState(0);
+  const [bestStreak, setBestStreak] = useState(0);
 
   useEffect(() => {
     setIndex(getRandomIndex());
@@ -135,8 +137,10 @@ export default function Home() {
     setSelected(choice);
 
     if (choice === current.type) {
-      // 50問を上限に桜を増やす
-      setStreak((previous) => Math.min(previous + 1, MAX_STREAK));
+      // 50問を上限に桜を増やし、今回の最高連続正解記録を更新する
+      const nextStreak = Math.min(streak + 1, MAX_STREAK);
+      setStreak(nextStreak);
+      setBestStreak((previousBest) => Math.max(previousBest, nextStreak));
     } else {
       // 1問でも間違えたら桜を全消去
       setStreak(0);
@@ -211,14 +215,24 @@ export default function Home() {
             ))}
           </div>
 
-          <button
-            type="button"
-            className="mistake-history-button"
-            onClick={() => setShowMistakeHistory(true)}
-            aria-label="ミス履歴を表示"
-          >
-            ミス<br />履歴
-          </button>
+          <div className="history-controls">
+            <div
+              className="best-streak-card"
+              aria-label={`今回の最高連続正解 ${bestStreak}`}
+            >
+              <span className="best-streak-label">連続正解</span>
+              <strong className="best-streak-number">{bestStreak}</strong>
+            </div>
+
+            <button
+              type="button"
+              className="mistake-history-button"
+              onClick={() => setShowMistakeHistory(true)}
+              aria-label="ミス履歴を表示"
+            >
+              ミス<br />履歴
+            </button>
+          </div>
         </div>
 
         <div className="account-panel">{current.name}</div>
@@ -326,7 +340,7 @@ export default function Home() {
         >
           次の問題
         </button>
-        <div className="app-version">Ver.1.3.0</div>
+        <div className="app-version">Ver.1.4.0</div>
       </section>
 
       {showMistakeHistory && (
