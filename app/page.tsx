@@ -97,7 +97,6 @@ const accounts: Account[] = [
   { name: "現金過不足", type: "その他", description: "実際の現金残高と帳簿残高が一致しないとき、原因が判明するまで一時的に処理する勘定科目です。" },
 ];
 
-const MAX_STREAK = 50;
 const FLOWERS_PER_ROW = 10;
 
 function getRandomIndex(exclude?: number) {
@@ -138,7 +137,7 @@ export default function Home() {
 
     if (choice === current.type) {
       // 50問を上限に桜を増やし、今回の最高連続正解記録を更新する
-      const nextStreak = Math.min(streak + 1, MAX_STREAK);
+      const nextStreak = streak + 1;
       setStreak(nextStreak);
       setBestStreak((previousBest) => Math.max(previousBest, nextStreak));
     } else {
@@ -221,7 +220,7 @@ export default function Home() {
               aria-label={`今回の最高連続正解 ${bestStreak}`}
             >
               <span className="best-streak-label">連続正解</span>
-              <strong className="best-streak-number">{bestStreak}</strong>
+              <strong className={`best-streak-number ${bestStreak >= 1000 ? "best-streak-number-4digits" : bestStreak >= 100 ? "best-streak-number-3digits" : ""}`}>{bestStreak}</strong>
             </div>
 
             <button
@@ -340,7 +339,7 @@ export default function Home() {
         >
           次の問題
         </button>
-        <div className="app-version">Ver.1.4.0</div>
+        <div className="app-version">Ver.1.4.1</div>
       </section>
 
       {showMistakeHistory && (
