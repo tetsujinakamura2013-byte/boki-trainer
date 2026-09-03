@@ -234,7 +234,7 @@ button {
   justify-content: flex-start;
   gap: 3px;
   padding: 8px 6px;
-  overflow: hidden;
+  overflow: visible;
 }
 
 /* 桜は左から右へ並ぶ */
@@ -437,7 +437,7 @@ button {
 }
 
 
-/* Ver.1.4.0 今回の最高連続正解表示 */
+/* Ver.1.4.1 今回の最高連続正解表示 */
 .history-controls {
   align-self: end;
   display: flex;
@@ -475,6 +475,14 @@ button {
   line-height: 1;
 }
 
+.best-streak-number-3digits {
+  font-size: 20px;
+}
+
+.best-streak-number-4digits {
+  font-size: 17px;
+}
+
 .history-controls .mistake-history-button {
   margin-bottom: 0;
 }
@@ -497,5 +505,17 @@ button {
 
   .best-streak-number {
     font-size: 23px;
+  }
+
+  .best-streak-number-3digits {
+    font-size: 18px;
+  }
+
+  .best-streak-number-4digits {
+    font-size: 15px;
+  }
+
+  .best-streak-number-5plus {
+    font-size: 13px;
   }
 }
