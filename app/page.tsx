@@ -24,8 +24,11 @@ const accounts: Account[] = [
   { name: "貯蔵品", type: "資産", description: "未使用の切手・収入印紙・消耗品など、次期以降に使用する物品です。" },
   { name: "前払金", type: "資産", description: "商品などを受け取る前に、代金の一部または全部を先に支払ったものです。" },
   { name: "前払費用", type: "資産", description: "家賃や保険料など、翌期分の費用を当期中に先払いしたものです。" },
+  { name: "前払保険料", type: "資産", description: "翌期以降の保険期間に対応する、先払い済みの保険料です。" },
   { name: "未収入金", type: "資産", description: "商品販売以外の取引で発生した、まだ受け取っていない代金です。" },
   { name: "未収収益", type: "資産", description: "当期に発生した収益のうち、まだ受け取っていない金額です。" },
+  { name: "未収手数料", type: "資産", description: "当期に発生した手数料収益のうち、まだ受け取っていない金額です。" },
+  { name: "未収地代", type: "資産", description: "当期に発生した地代収入のうち、まだ受け取っていない金額です。" },
   { name: "立替金", type: "資産", description: "本来は他人が負担する金額を、一時的に代わって支払ったものです。" },
   { name: "仮払金", type: "資産", description: "支払った目的や金額がまだ確定していないため、一時的に処理する勘定科目です。" },
   { name: "仮払法人税等", type: "資産", description: "法人税等の中間申告などで、確定前にあらかじめ支払った金額です。" },
@@ -45,9 +48,12 @@ const accounts: Account[] = [
   { name: "買掛金", type: "負債", description: "商品を掛けで仕入れ、後日その代金を支払う義務です。" },
   { name: "電子記録債務", type: "負債", description: "電子記録によって発生・譲渡される、将来代金を支払う義務です。" },
   { name: "借入金", type: "負債", description: "銀行などから借りた金銭で、将来返済する義務です。" },
+  { name: "当座借越", type: "負債", description: "当座預金の残高を超えて銀行から借り入れている金額です。" },
   { name: "手形借入金", type: "負債", description: "金銭を借り、その証拠として約束手形を振り出した場合の債務です。" },
   { name: "未払金", type: "負債", description: "商品仕入れ以外の取引で発生した、まだ支払っていない代金です。" },
   { name: "未払費用", type: "負債", description: "当期に発生した費用のうち、まだ支払っていない金額です。" },
+  { name: "未払家賃", type: "負債", description: "当期分の家賃のうち、まだ支払っていない金額です。" },
+  { name: "未払利息", type: "負債", description: "当期に発生した利息のうち、まだ支払っていない金額です。" },
   { name: "未払法人税等", type: "負債", description: "決算で確定した法人税等のうち、まだ納付していない金額です。" },
   { name: "未払消費税", type: "負債", description: "受け取った消費税から支払った消費税を差し引いた、納付すべき消費税です。" },
   { name: "未払配当金", type: "負債", description: "株主総会などで配当が決まったものの、まだ株主へ支払っていない金額です。" },
@@ -64,6 +70,7 @@ const accounts: Account[] = [
   { name: "繰越利益剰余金", type: "純資産", description: "会社がこれまでに得た利益のうち、配当などに使わず翌期へ繰り越した金額です。" },
 
   { name: "仕入", type: "費用", description: "販売する商品を購入したときの金額を、三分法で記録する勘定科目です。" },
+  { name: "売上原価", type: "費用", description: "当期に販売した商品の仕入原価です。期首商品と当期仕入から期末商品を差し引いて計算します。" },
   { name: "給料", type: "費用", description: "従業員へ労働の対価として支払う給与や賃金です。" },
   { name: "法定福利費", type: "費用", description: "健康保険料や厚生年金保険料など、会社が負担する社会保険料です。" },
   { name: "広告宣伝費", type: "費用", description: "商品や会社を広く知らせるための広告・宣伝にかかった費用です。" },
@@ -89,6 +96,8 @@ const accounts: Account[] = [
   { name: "受取手数料", type: "収益", description: "仲介やサービスの提供などにより受け取る手数料です。" },
   { name: "受取利息", type: "収益", description: "預金や貸付金などから受け取る利息です。" },
   { name: "受取家賃", type: "収益", description: "建物や部屋などを貸すことによって受け取る賃貸料です。" },
+  { name: "受取地代", type: "収益", description: "土地を貸したことによって受け取る地代収入です。" },
+  { name: "貸倒引当金戻入", type: "収益", description: "貸倒引当金の余剰額を収益として戻し入れるときに使う勘定科目です。" },
   { name: "償却債権取立益", type: "収益", description: "以前に貸倒れとして処理した売掛金などを、後になって回収できたときの収益です。" },
   { name: "固定資産売却益", type: "収益", description: "固定資産を帳簿価額より高く売却したときに生じる利益です。" },
   { name: "雑益", type: "収益", description: "現金過不足など、少額で他の勘定科目に当てはまらない利益です。" },
@@ -98,6 +107,7 @@ const accounts: Account[] = [
 ];
 
 const FLOWERS_PER_ROW = 10;
+const FLOWERS_PER_TREE = 50;
 
 function getRandomIndex(exclude?: number) {
   if (accounts.length <= 1) return 0;
@@ -179,39 +189,78 @@ export default function Home() {
       countB - countA || nameA.localeCompare(nameB, "ja")
   );
 
-  // 桜を10個ずつの段に分ける
+  // 木1本に50 / 100 / 150回分の正解を蓄積し、残り1～50個を花として表示する。
+  // 50の倍数では花50個を残す。木の成長は51、101、151回目から。
+  const treeStage = streak <= 50 ? 0 : streak <= 100 ? 1 : streak <= 150 ? 2 : 3;
+  const remainingFlowers = streak === 0 ? 0 : ((streak - 1) % FLOWERS_PER_TREE) + 1;
+  const treeImages = ['', '/sakura_stage1.png', '/sakura_stage2.png', '/sakura_stage3.png'];
+  // 残りの桜を10個ずつの段に分ける
   const flowerRows = Array.from(
-    { length: Math.ceil(streak / FLOWERS_PER_ROW) },
+    { length: Math.ceil(remainingFlowers / FLOWERS_PER_ROW) },
     (_, rowIndex) => {
-      const remaining = streak - rowIndex * FLOWERS_PER_ROW;
+      const remaining = remainingFlowers - rowIndex * FLOWERS_PER_ROW;
       return Math.min(remaining, FLOWERS_PER_ROW);
     }
   );
 
   return (
     <main className="page-shell">
+      <style>{`
+/* Ver.1.4.10: 1本の木が成長。底辺固定、50回の倍数は花50個。 */
+.flower-history-area { min-height: 155px; }
+.flower-history-area .flower-progress { min-height: 155px; display: flex; min-width: 0; align-items: flex-end; gap: 5px; }
+.flower-history-area .flower-progress .flower-area { min-height: 155px; flex: 1 1 auto; min-width: 0; padding-right: 2px; }
+.cherry-tree-area { width: 62px; flex: 0 0 62px; height: 150px; display: flex; align-items: flex-end; justify-content: center; overflow: visible; }
+.cherry-tree { width: 62px; flex: 0 0 62px; display: flex; align-items: flex-end; justify-content: center; }
+.cherry-tree.stage1 { height: 62px; }
+.cherry-tree.stage2 { height: 98px; }
+.cherry-tree.stage3 { height: 148px; }
+.cherry-tree-image { width: 100%; height: 100%; object-fit: contain; object-position: center bottom; display: block; }
+.flower-progress.has-trees .flower { font-size: clamp(12px, 3.5vw, 20px); }
+.flower-progress.has-trees .flower-second-half { margin-left: 3px; }
+@media (max-width: 420px) {
+  .flower-history-area { min-height: 140px; }
+  .flower-history-area .flower-progress { min-height: 140px; gap: 2px; }
+  .flower-history-area .flower-progress .flower-area { min-height: 140px; }
+  .cherry-tree-area { width: 54px; flex-basis: 54px; height: 144px; }
+  .cherry-tree { width: 54px; flex-basis: 54px; }
+  .cherry-tree.stage1 { height: 54px; }
+  .cherry-tree.stage2 { height: 93px; }
+  .cherry-tree.stage3 { height: 142px; }
+  .flower-progress.has-trees .flower { font-size: clamp(10px, 3.2vw, 15px); }
+  .flower-progress.has-trees .flower-second-half { margin-left: 2px; }
+}
+@media (max-width: 350px) {
+  .cherry-tree-area { width: 45px; flex-basis: 45px; }
+  .cherry-tree { width: 45px; flex-basis: 45px; }
+  .cherry-tree.stage1 { height: 45px; }
+  .cherry-tree.stage2 { height: 80px; }
+  .cherry-tree.stage3 { height: 126px; }
+}
+`}</style>
       <section
         className="app-card"
         aria-label="簿記3級 5要素トレーニング"
       >
         <div className="flower-history-area">
           {/* 連続正解の桜。1段目を下側に表示 */}
-          <div className="flower-area" aria-label={`連続正解数 ${streak}`}>
-            {flowerRows.map((flowerCount, rowIndex) => (
-              <div className="flower-row" key={rowIndex}>
-                {Array.from({ length: flowerCount }, (_, flowerIndex) => (
-                  <span
-                    key={flowerIndex}
-                    className={`flower ${
-                      flowerIndex === 5 ? "flower-second-half" : ""
-                    }`}
-                    aria-hidden="true"
-                  >
-                    🌸
-                  </span>
-                ))}
+          <div className={`flower-progress ${treeStage > 0 ? "has-trees" : ""}`} aria-label={`連続正解数 ${streak}、桜の成長段階 ${treeStage}、花 ${remainingFlowers} 個`}>
+            <div className="flower-area">
+              {flowerRows.map((flowerCount, rowIndex) => (
+                <div className="flower-row" key={rowIndex}>
+                  {Array.from({ length: flowerCount }, (_, flowerIndex) => (
+                    <span key={flowerIndex} className={`flower ${flowerIndex === 5 ? "flower-second-half" : ""}`} aria-hidden="true">🌸</span>
+                  ))}
+                </div>
+              ))}
+            </div>
+            {treeStage > 0 && (
+              <div className="cherry-tree-area" aria-label={`桜の木 成長段階${treeStage}`}>
+                <div className={`cherry-tree stage${treeStage}`}>
+                  <img className="cherry-tree-image" src={treeImages[treeStage]} alt={["", "つぼみの桜の木", "7～8分咲きの桜の木", "満開の桜の木"][treeStage]} width={62} height={124} />
+                </div>
               </div>
-            ))}
+            )}
           </div>
 
           <div className="history-controls">
@@ -339,7 +388,7 @@ export default function Home() {
         >
           次の問題
         </button>
-        <div className="app-version">Ver.1.4.1</div>
+        <div className="app-version">Ver.1.4.10</div>
       </section>
 
       {showMistakeHistory && (
