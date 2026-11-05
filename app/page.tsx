@@ -126,6 +126,8 @@ export default function Home() {
   const [selected, setSelected] = useState<ElementType | null>(null);
   const [showExplanation, setShowExplanation] = useState(false);
   const [showMistakeHistory, setShowMistakeHistory] = useState(false);
+  // 共有QRコードの表示・非表示。学習状態には影響させない
+  const [showShareQr, setShowShareQr] = useState(false);
   const [mistakeCounts, setMistakeCounts] = useState<Record<string, number>>({});
 
   // 現在の連続正解数と、今回の最高連続正解記録。
@@ -206,7 +208,7 @@ export default function Home() {
   return (
     <main className="page-shell">
       <style>{`
-/* Ver.1.4.10: 1本の木が成長。底辺固定、50回の倍数は花50個。 */
+/* Ver.1.4.11: 桜の表示は従来どおり維持。共有ボタンだけ追加。 */
 .flower-history-area { min-height: 155px; }
 .flower-history-area .flower-progress { min-height: 155px; display: flex; min-width: 0; align-items: flex-end; gap: 5px; }
 .flower-history-area .flower-progress .flower-area { min-height: 155px; flex: 1 1 auto; min-width: 0; padding-right: 2px; }
@@ -218,6 +220,15 @@ export default function Home() {
 .cherry-tree-image { width: 100%; height: 100%; object-fit: contain; object-position: center bottom; display: block; }
 .flower-progress.has-trees .flower { font-size: clamp(12px, 3.5vw, 20px); }
 .flower-progress.has-trees .flower-second-half { margin-left: 3px; }
+/* 既存のバージョン表示行に収める。縦方向の余白は増やさない */
+.share-version-row { display:flex; justify-content:flex-end; align-items:center; gap:10px; height:18px; margin-top:0; }
+.share-qr-trigger { display:inline-flex; gap:5px; align-items:center; justify-content:center; border:1px solid #94a3b8; border-radius:6px; padding:0 5px; background:#f8fafc; color:#475569; font-size:11px; line-height:16px; cursor:pointer; }
+.share-qr-trigger:focus-visible { outline:2px solid #2563eb; outline-offset:2px; }
+.share-version-row .app-version { margin:0; }
+.share-qr-image { display:block; width:min(66vw,240px); height:auto; margin:14px auto; image-rendering:pixelated; }
+.share-modal-card { max-width:340px; text-align:center; }
+.share-modal-card .modal-title { margin-bottom:12px; }
+.share-qr-caption { font-size:13px; color:#64748b; overflow-wrap:anywhere; margin:8px 0 0; }
 @media (max-width: 420px) {
   .flower-history-area { min-height: 140px; }
   .flower-history-area .flower-progress { min-height: 140px; gap: 2px; }
@@ -388,8 +399,24 @@ export default function Home() {
         >
           次の問題
         </button>
-        <div className="app-version">Ver.1.4.10</div>
+        <div className="share-version-row">
+          <button type="button" className="share-qr-trigger" onClick={() => setShowShareQr(true)} aria-label="アプリ共有用のQRコードを表示">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM21 14v3M14 21h3M21 21v-3h-3"/></svg>
+            共有
+          </button>
+          <div className="app-version">Ver.1.4.11</div>
+        </div>
       </section>
+
+      {showShareQr && (
+        <div className="modal-overlay" role="presentation" onClick={() => setShowShareQr(false)}>
+          <section className="modal-card share-modal-card" role="dialog" aria-modal="true" aria-labelledby="share-qr-title" onClick={(event) => event.stopPropagation()}>
+            <h2 id="share-qr-title" className="modal-title">アプリを共有</h2>
+            <img className="share-qr-image" src="/share_qr.png" alt="簿記5要素トレーニングの共有用QRコード" width={240} height={240} />
+            <p className="share-qr-caption">QRコードを読み取ると、このアプリを開けます。</p>
+          </section>
+        </div>
+      )}
 
       {showMistakeHistory && (
         <div
