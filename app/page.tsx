@@ -128,6 +128,11 @@ export default function Home() {
   const [showMistakeHistory, setShowMistakeHistory] = useState(false);
   // 共有QRコードの表示・非表示。学習状態には影響させない
   const [showShareQr, setShowShareQr] = useState(false);
+  // 初回訪問時だけホーム画面への追加方法を案内する
+  const [showFirstVisit, setShowFirstVisit] = useState(false);
+  const [showInstallGuide, setShowInstallGuide] = useState(false);
+  const [guideFromShare, setGuideFromShare] = useState(false);
+  const [installDevice, setInstallDevice] = useState<"iphone" | "android">("iphone");
   const [mistakeCounts, setMistakeCounts] = useState<Record<string, number>>({});
 
   // 現在の連続正解数と、今回の最高連続正解記録。
@@ -137,7 +142,31 @@ export default function Home() {
 
   useEffect(() => {
     setIndex(getRandomIndex());
+    // ブラウザ単位で初回だけ案内する。保存できない環境では通常利用を優先する
+    try {
+      const key = "boki-trainer-install-guide-v1";
+      if (window.localStorage.getItem(key) !== "seen") {
+        window.localStorage.setItem(key, "seen");
+        setShowFirstVisit(true);
+      }
+    } catch {
+      // プライベート設定等で保存できない場合も学習機能は使える
+    }
+    // 端末に応じて登録手順の最初のタブを選ぶ（ユーザーによる切替も可能）
+    if (/Android/i.test(navigator.userAgent)) setInstallDevice("android");
   }, []);
+
+  const openInstallGuide = (fromShare: boolean) => {
+    setShowFirstVisit(false);
+    setShowShareQr(false);
+    setGuideFromShare(fromShare);
+    setShowInstallGuide(true);
+  };
+
+  const closeInstallGuide = () => {
+    setShowInstallGuide(false);
+    if (guideFromShare) setShowShareQr(true);
+  };
 
   const current = useMemo(() => accounts[index], [index]);
   const isCorrect = selected === current.type;
@@ -208,7 +237,7 @@ export default function Home() {
   return (
     <main className="page-shell">
       <style>{`
-/* Ver.1.4.11: 桜の表示は従来どおり維持。共有ボタンだけ追加。 */
+/* Ver.1.4.12: 桜の表示は従来どおり維持。共有ウィンドウ内に登録手順を追加。 */
 .flower-history-area { min-height: 155px; }
 .flower-history-area .flower-progress { min-height: 155px; display: flex; min-width: 0; align-items: flex-end; gap: 5px; }
 .flower-history-area .flower-progress .flower-area { min-height: 155px; flex: 1 1 auto; min-width: 0; padding-right: 2px; }
@@ -228,7 +257,22 @@ export default function Home() {
 .share-qr-image { display:block; width:min(66vw,240px); height:auto; margin:14px auto; image-rendering:pixelated; }
 .share-modal-card { max-width:340px; text-align:center; }
 .share-modal-card .modal-title { margin-bottom:12px; }
-.share-qr-caption { font-size:13px; color:#64748b; overflow-wrap:anywhere; margin:8px 0 0; }
+ .share-qr-caption { font-size:13px; color:#64748b; overflow-wrap:anywhere; margin:8px 0 0; }
+/* 登録ガイドは重ねて表示し、学習画面の縦幅を増やさない */
+.install-modal-card { width:min(90vw,350px); max-height:85dvh; overflow-y:auto; box-sizing:border-box; }
+.install-modal-card .modal-title { margin-bottom:10px; }
+.install-intro { font-size:14px; line-height:1.7; color:#475569; margin:8px 0 14px; }
+.install-actions { display:flex; flex-direction:column; gap:8px; }
+.install-action { display:block; width:100%; padding:10px 12px; border-radius:8px; border:1px solid #cbd5e1; color:#1e293b; background:#fff; font-size:14px; font-weight:600; cursor:pointer; }
+.install-action.primary { background:#2563eb; color:#fff; border-color:#2563eb; }
+.install-action.small { padding:8px; font-size:13px; }
+.install-tabs { display:flex; margin:12px 0; gap:8px; }
+.install-tab { flex:1; border:1px solid #cbd5e1; border-radius:7px; background:#f8fafc; padding:8px; font-size:14px; cursor:pointer; }
+.install-tab.active { border-color:#2563eb; background:#eff6ff; color:#1d4ed8; font-weight:700; }
+.install-steps { text-align:left; font-size:13px; line-height:1.75; color:#334155; padding-left:25px; margin:10px 0; }
+.install-help-link { display:block; font-size:13px; color:#1d4ed8; text-decoration:underline; margin:12px auto; overflow-wrap:anywhere; }
+.install-share-link { margin-top:12px; padding:10px 3px 2px; width:100%; border:0; border-top:1px solid #e2e8f0; background:transparent; color:#1e40af; cursor:pointer; font-size:13px; font-weight:600; }
+.install-note { font-size:12px; color:#64748b; line-height:1.6; }
 @media (max-width: 420px) {
   .flower-history-area { min-height: 140px; }
   .flower-history-area .flower-progress { min-height: 140px; gap: 2px; }
@@ -404,7 +448,7 @@ export default function Home() {
             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM21 14v3M14 21h3M21 21v-3h-3"/></svg>
             共有
           </button>
-          <div className="app-version">Ver.1.4.11</div>
+          <div className="app-version">Ver.1.4.12</div>
         </div>
       </section>
 
@@ -414,6 +458,56 @@ export default function Home() {
             <h2 id="share-qr-title" className="modal-title">アプリを共有</h2>
             <img className="share-qr-image" src="/share_qr.png" alt="簿記5要素トレーニングの共有用QRコード" width={240} height={240} />
             <p className="share-qr-caption">QRコードを読み取ると、このアプリを開けます。</p>
+            <button type="button" className="install-share-link" onClick={() => openInstallGuide(true)}>
+              ホーム画面への登録方法　›
+            </button>
+          </section>
+        </div>
+      )}
+
+      {showFirstVisit && (
+        <div className="modal-overlay" role="presentation" onClick={() => setShowFirstVisit(false)}>
+          <section className="modal-card install-modal-card" role="dialog" aria-modal="true" aria-labelledby="first-install-title" onClick={(event) => event.stopPropagation()}>
+            <h2 id="first-install-title" className="modal-title">ホーム画面に登録できます</h2>
+            <p className="install-intro">ホーム画面に追加すると、次回からアイコンをタップするだけで学習できます。</p>
+            <div className="install-actions">
+              <button type="button" className="install-action primary" onClick={() => openInstallGuide(false)}>登録方法を見る</button>
+              <button type="button" className="install-action" onClick={() => setShowFirstVisit(false)}>今はしない</button>
+            </div>
+          </section>
+        </div>
+      )}
+
+      {showInstallGuide && (
+        <div className="modal-overlay" role="presentation" onClick={closeInstallGuide}>
+          <section className="modal-card install-modal-card" role="dialog" aria-modal="true" aria-labelledby="install-guide-title" onClick={(event) => event.stopPropagation()}>
+            <h2 id="install-guide-title" className="modal-title">ホーム画面に登録</h2>
+            <div className="install-tabs" role="group" aria-label="スマートフォンの種類">
+              <button type="button" className={`install-tab ${installDevice === "iphone" ? "active" : ""}`} onClick={() => setInstallDevice("iphone")} aria-pressed={installDevice === "iphone"}>iPhone</button>
+              <button type="button" className={`install-tab ${installDevice === "android" ? "active" : ""}`} onClick={() => setInstallDevice("android")} aria-pressed={installDevice === "android"}>Android</button>
+            </div>
+            {installDevice === "iphone" ? (
+              <>
+                <ol className="install-steps">
+                  <li>このアプリをSafariで開きます。</li>
+                  <li>Safariの「共有」メニューを開きます。</li>
+                  <li>「ホーム画面に追加」を選び、「追加」を押します。</li>
+                </ol>
+                <p className="install-note">※「ウェブアプリとして開く」が表示された場合は、オンにして追加できます。表示や操作位置はiOSによって異なる場合があります。</p>
+                <a className="install-help-link" href="https://support.apple.com/ja-jp/guide/iphone/iphea86e5236/ios" target="_blank" rel="noopener noreferrer">Apple公式の詳しい手順を見る ↗</a>
+              </>
+            ) : (
+              <>
+                <ol className="install-steps">
+                  <li>このアプリをChromeで開きます。</li>
+                  <li>右上の「︙」メニューを開きます。</li>
+                  <li>「ホーム画面に追加」または「アプリをインストール」を選びます。</li>
+                </ol>
+                <p className="install-note">※表示されるメニュー名はAndroidやChromeのバージョンによって異なります。</p>
+                <a className="install-help-link" href="https://support.google.com/chrome/answer/9658361?hl=ja" target="_blank" rel="noopener noreferrer">Google公式の詳しい手順を見る ↗</a>
+              </>
+            )}
+            <button type="button" className="install-action small" onClick={closeInstallGuide}>{guideFromShare ? "共有画面に戻る" : "閉じる"}</button>
           </section>
         </div>
       )}
