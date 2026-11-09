@@ -237,18 +237,17 @@ export default function Home() {
   return (
     <main className="page-shell">
       <style>{`
-/* Ver.1.4.12: 桜の表示は従来どおり維持。共有ウィンドウ内に登録手順を追加。 */
+/* Ver.1.4.13: 木の有無で花の大きさを変えない。木は同じ場所で花より前面に重ねる。 */
 .flower-history-area { min-height: 155px; }
-.flower-history-area .flower-progress { min-height: 155px; display: flex; min-width: 0; align-items: flex-end; gap: 5px; }
+.flower-history-area .flower-progress { min-height: 155px; display: flex; min-width: 0; align-items: flex-end; gap: 5px; position: relative; }
 .flower-history-area .flower-progress .flower-area { min-height: 155px; flex: 1 1 auto; min-width: 0; padding-right: 2px; }
-.cherry-tree-area { width: 62px; flex: 0 0 62px; height: 150px; display: flex; align-items: flex-end; justify-content: center; overflow: visible; }
+.cherry-tree-area { position: absolute; right: 0; bottom: 0; z-index: 2; pointer-events: none; width: 62px; flex: 0 0 62px; height: 150px; display: flex; align-items: flex-end; justify-content: center; overflow: visible; }
 .cherry-tree { width: 62px; flex: 0 0 62px; display: flex; align-items: flex-end; justify-content: center; }
 .cherry-tree.stage1 { height: 62px; }
 .cherry-tree.stage2 { height: 98px; }
 .cherry-tree.stage3 { height: 148px; }
 .cherry-tree-image { width: 100%; height: 100%; object-fit: contain; object-position: center bottom; display: block; }
-.flower-progress.has-trees .flower { font-size: clamp(12px, 3.5vw, 20px); }
-.flower-progress.has-trees .flower-second-half { margin-left: 3px; }
+/* 花と5個ごとの区切りは、1～50回の既存CSSをそのまま使用する。 */
 /* 既存のバージョン表示行に収める。縦方向の余白は増やさない */
 .share-version-row { display:flex; justify-content:flex-end; align-items:center; gap:10px; height:18px; margin-top:0; }
 .share-qr-trigger { display:inline-flex; gap:5px; align-items:center; justify-content:center; border:1px solid #94a3b8; border-radius:6px; padding:0 5px; background:#f8fafc; color:#475569; font-size:11px; line-height:16px; cursor:pointer; }
@@ -282,8 +281,6 @@ export default function Home() {
   .cherry-tree.stage1 { height: 54px; }
   .cherry-tree.stage2 { height: 93px; }
   .cherry-tree.stage3 { height: 142px; }
-  .flower-progress.has-trees .flower { font-size: clamp(10px, 3.2vw, 15px); }
-  .flower-progress.has-trees .flower-second-half { margin-left: 2px; }
 }
 @media (max-width: 350px) {
   .cherry-tree-area { width: 45px; flex-basis: 45px; }
@@ -448,7 +445,7 @@ export default function Home() {
             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM21 14v3M14 21h3M21 21v-3h-3"/></svg>
             共有
           </button>
-          <div className="app-version">Ver.1.4.12</div>
+          <div className="app-version">Ver.1.4.13</div>
         </div>
       </section>
 
